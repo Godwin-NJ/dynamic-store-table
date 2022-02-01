@@ -16,7 +16,7 @@ const[editFormData, setEditFormData] = useState({
   phoneNumber : '',
   email : ''
 })
-const[formData, setFormData] = useState([])
+// const[formData, setFormData] = useState([])
 
 const handleEditFormChange = (e) => {
   e.preventDefault()
@@ -36,14 +36,47 @@ const handleEditClick = (e,contact) => {
     address : contact.address,
     phoneNumber : contact.phoneNumber,
     email : contact.email
-  } 
+  }
   // const newFormData = {...editFormData}
   setEditFormData(EditExistingData)
 }
 
+
+const handleEditFormSubmit = (e) => {
+    e.preventDefault()
+    const editContact = {
+      id : editableContactId,
+      fullName: editFormData.fullName,
+      address : editFormData.address,
+      phoneNumber : editFormData.phoneNumber,
+      email : editFormData.email
+    }
+
+    const newContacts = [...contact]
+    const index = contact.findIndex((user) => {
+      return user.id === editableContactId
+    })
+    newContacts[index] = editContact
+    setContact(newContacts)
+    setEditableContactId(null)
+}
+
+
+const handleCancelClick = () => {
+  setEditableContactId(null)
+}
+
+const deleteContact = (contactID) => {
+  const newContacts = [...contact]
+  const index = contact.findIndex((user) => user.id === contactID)
+  newContacts.splice(index,1)
+  setContact(newContacts)
+
+}
+
   return (
     <div className="app-container">
-      <form>
+      <form onSubmit={handleEditFormSubmit}>
       <table>
         <thead>
         <tr>
@@ -61,9 +94,14 @@ const handleEditClick = (e,contact) => {
                 { editableContactId === data.id ? 
                   <EditableRow 
                     handleEditFormChange={handleEditFormChange}
-                    editFormData={editFormData} /> 
+                    editFormData={editFormData} 
+                    handleCancelClick={handleCancelClick}
+                    /> 
                   : 
-                  < ReadOnlyRow data={data} handleEditClick={handleEditClick}/>
+                  < ReadOnlyRow data={data} 
+                      handleEditClick={handleEditClick}
+                      deleteContact={deleteContact}
+                    />
                 }
                 
               </Fragment>
